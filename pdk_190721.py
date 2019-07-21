@@ -53,7 +53,9 @@ class DrivingClient(DrivingController):
         print(self.road)
 
         print("-------------------------------------------------------------")
-        
+
+        self.find()
+        print("-------------------------------------------------------------")
         #
         # Editing area ends
         # ==========================================================#
@@ -145,14 +147,29 @@ class DrivingClient(DrivingController):
             # 현재 차가 있는 위치의 index를 가져온다.
             now = self.findIndex(nowMiddle)
             if(angle < 0):
-                for j in range(now[0],0,-1):
+                for j in range(6,0,-1):
                     self.road[j] += (angle / (i+1))
             else:
-                for j in range(now[0],len(self.road),1):
+                for j in range(6,len(self.road),1):
                     self.road[j] += (angle/(i+1))
 
 
+    # 제일 작은 index를 찾자
+    def find(self):
+        length = len(self.road)
+        idx = 0
+        maxValue = -999
+        for i in range(0,length,1):
+            if(maxValue < self.road[i]):
+                idx = i
+                maxValue = self.road[i]
+        
+       
+        go = -10 + (idx+1) * 1.25
 
+        print("우리가 가야할 곳은 {} 이다.".format(go))
+
+        return go
 
 
      
