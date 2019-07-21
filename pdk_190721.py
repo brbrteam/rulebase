@@ -16,7 +16,7 @@ class DrivingClient(DrivingController):
         #
         self.car_width = 2.5
         
-
+        self.road = []
         
         
         #
@@ -32,15 +32,27 @@ class DrivingClient(DrivingController):
         # Editing area starts from here
         #
 
+        car_controls.steering = 0
+        car_controls.throttle = 1
+
         road_width = self.half_road_limit - (self.car_width / 2)
 
-        road = self.init_road(road_width)
+        self.road = self.init_road(road_width)
 
-        print(road)
+        
 
         # throttle 이 1이면 속도가 9km/h ~ 13km/h 증가한다. ( 9는 아마 잔디를 달릴때로 추정 )
         # brake 0.5가 10km/h를 줄이는 것으로 추정.
 
+        # self.findObstacles(sensing_info.track_forward_obstacles)
+        self.findTrackCurve(sensing_info.moving_angle,sensing_info.track_forward_angles,sensing_info.to_middle)
+
+        print("현재 차량의 to_middle : {} \n".format(sensing_info.to_middle))
+
+        print(sensing_info.track_forward_angles)
+        print(self.road)
+
+        print("-------------------------------------------------------------")
         
         #
         # Editing area ends
@@ -90,6 +102,16 @@ class DrivingClient(DrivingController):
         weight = -5
         for i in range(0,length,1):
             obs = array[i]
+            dist = obs["dist"]
+            middle = obs["to_middle"]
+
+            arr = self.findIndex(middle)
+            for j in range(0,len(arr),1):
+                idx = arr[j]
+                print(idx)
+                self.road[idx] = self.road[idx] - dist
+        
+
             
 
     # number 위치일 때, road 배열의 어느 index인지 판단!
@@ -98,21 +120,36 @@ class DrivingClient(DrivingController):
         result = number / 1.25
 
         if(result >= 0):
-            index = 7+result
-            arr.append(index-1)
+            index = 7+math.floor(abs(result))
             arr.append(index)
+            arr.append(index+1)
         else:
             index = 7 - math.floor(abs(result))
             arr.append(index-1)
             arr.append(index)
         
-        return array
+        return arr
 
 
 
 
 
 
+    # 도로의 방향에 따라 가중치를 부여한다.
+    def findTrackCurve(self, nowAngle, array, nowMiddle):
+        length = len(array)
+
+        for i in range(0,length,1):
+            angle = array[i] + nowAngle
+
+            # 현재 차가 있는 위치의 index를 가져온다.
+            now = self.findIndex(nowMiddle)
+            if(angle < 0):
+                for j in range(now[0],0,-1):
+                    self.road[j] += (angle / (i+1))
+            else:
+                for j in range(now[0],len(self.road),1):
+                    self.road[j] += (angle/(i+1))
 
 
 
