@@ -1,0 +1,9 @@
+M : method
+V : variable
+
+1. 전방 도로 정보를 통해 좌표를 계산한다. calc_road_position(M) , curve_datas(V) [구간][x좌표,y좌표]
+2. 장애물이 있을경우, 장애물의 좌표에 표시를 한다. mark_obstacles(M)
+3. 계산된 좌표를 통해 각 구간의 n개 시작점 - n개 도착점으로의 정보를 계산한다. calc_road_info(M), curve_info(V) [구간][시작점][도착점][거리, 각도, 페널티]
+4. 계산된 정보를 사용하여 최적 루트를 계산한다. calc_routes(M), calc_route_penalty(M)
+5. 계산된 정보를 가져와 controls 값을 셋팅한다. make_decision(M)
+6. 셋팅된 정보를 보정한다.  stabilize(M)
