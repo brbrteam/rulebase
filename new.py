@@ -47,7 +47,6 @@ class DrivingClient(DrivingController):
         self.road = self.init_road(road_width)
         self.flag = [True,True,True,True,True,True,True,True,True,True,True,True,True,True,True]
         self.steering_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-
         # --------------------------------------------------------------------------------
         
         # 현재 sensing_info
@@ -60,14 +59,14 @@ class DrivingClient(DrivingController):
 
         index = self.findIndex(middle)[0]
 
-        if(self.isRight(angle) == False):
+        # if(self.isRight(angle) == False):
 
-            print("isRight()")
+        #     print("isRight()")
 
-            self.prev_angle = angle
-            car_controls.steering = self.prev_steering
-            car_controls.throttle = 1
-            return car_controls
+        #     self.prev_angle = angle
+        #     car_controls.steering = self.prev_steering
+        #     car_controls.throttle = 1
+        #     return car_controls
 
         # 차가 나갔나 안나갔나
         flag = self.isCarOut(middle,angle)
@@ -239,19 +238,19 @@ class DrivingClient(DrivingController):
         speedAngle = 1
         if(speed > 100):
             speedValue = 0.025
-            speedAngle = 0
+            speedAngle = 0.1
         elif(speed > 50):
             speedValue = 0.02
-            speedAngle = 1.3
+            speedAngle = 0.08
         else:
             speedValue = 0.015
-            speedAngle = 1.1
+            speedAngle = 0.05
 
         # 우선 car angle 신경쓰지말고 짜보자.
         # 현재 road angle 이 양수야.
         
         
-        nowAngle = nowAngle / 90 * speedAngle
+        nowAngle = nowAngle / 90
         rad = math.radians(angle)
         tanz = rad
         self.steering_array[7] =  speedValue * (rad) - nowAngle
