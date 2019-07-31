@@ -23,7 +23,7 @@ class DrivingClient(DrivingController):
         self.prev_steering = 0
 
         self.prev_angle = 0
-        
+        self.now_angle = 0
         #
         # Editing area ends
         # ==========================================================#
@@ -84,12 +84,13 @@ class DrivingClient(DrivingController):
 
         if(flag):
             index = 7
-            car_controls.steering = -self.steering_array[index]
+            angle = -angle
+            car_controls.steering = angle / 90
             self.prev_steering = car_controls.steering
             self.prev_flag = self.flag
             return car_controls
 
-        if(flag == True and self.prev_flag == False):
+        if(flag == False and self.prev_flag == True):
             car_controls.steering = - self.prev_steering
             self.prev_flag = self.flag
             return car_controls
@@ -124,10 +125,21 @@ class DrivingClient(DrivingController):
         car_controls.steering = self.steering_array[index]
         self.prev_steering = car_controls.steering
 
-        if(car_controls.steering > 0.15):
-            car_controls.brake = 0.1
+       
 
+        if(sensing_info.speed > 80):
+            car_controls.throttle = 0.6
 
+        if(self.prev_angle >0 and self.prev_angle - self.now_angle > 6):
+            if(self.now_angle >= -2 and self.now_angle <= 2):
+                if(abs(car_controls.steering) > 0.03):
+                    car_controls.steering = 0
+        elif(self.prev_angle <0 and abs(self.prev_angle - self.now_angle) > 6 ):
+            if(self.now_angle >= -2 and self.now_angle <= 2):
+                if(abs(car_controls.steering) > 0.03):
+                    car_controls.steering = 0
+
+        
 
         # 이전 꺼 기억하자 ##############################################################
         
@@ -231,16 +243,21 @@ class DrivingClient(DrivingController):
         # 현재 위치
         nowIndex = self.findIndex(nowMiddle)
 
+       
         angle = array[math.floor(self.predictDistance(speed))]
+        
         # throttle 부터 계산해보자.
+        self.prev_angle = self.now_angle
+        self.now_angle = angle
+        
 
         speedValue = 0
         speedAngle = 1
         if(speed > 100):
-            speedValue = 0.025
+            speedValue = 0.04
             speedAngle = 0.1
         elif(speed > 50):
-            speedValue = 0.02
+            speedValue = 0.025
             speedAngle = 0.08
         else:
             speedValue = 0.015
